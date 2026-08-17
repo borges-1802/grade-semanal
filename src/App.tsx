@@ -177,7 +177,7 @@ export default function App() {
       <div className="max-w-350 mx-auto px-3 sm:px-4 pt-6 pb-16">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <h1 className="text-[22px] font-medium m-0">Grade Semanal</h1>
-          <div className="flex items-center gap-3 text-sm capitalize">
+          <div className="flex items-center gap-3 text-sm">
             <span className="text-neutral-400">Olá, {displayName}</span>
             <button
               onClick={handleLogout}
