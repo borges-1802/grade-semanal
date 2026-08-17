@@ -12,6 +12,19 @@ import type { Activity } from './types.ts'
 
 const WEEKS: WeekOption[] = generateWeeks()
 
+const WEEK_KEY_STORAGE = 'grade-last-week'
+const THEME_STORAGE = 'grade-theme'
+
+function getCachedWeekKey(): string {
+  const saved = localStorage.getItem(WEEK_KEY_STORAGE)
+  const isValid = saved && WEEKS.some((w) => w.key === saved)
+  return isValid ? saved : currentWeekKey(WEEKS)
+}
+
+function getCachedTheme(): 'dark' | 'light' {
+  return localStorage.getItem(THEME_STORAGE) === 'light' ? 'light' : 'dark'
+}
+
 type DocData = {
   days: string[]
   hourOverrides: Record<string, string>
@@ -23,7 +36,7 @@ const DEFAULT_DOC: DocData = {
   days: DEFAULT_DAYS,
   hourOverrides: {},
   activitiesByWeek: {},
-  theme: 'dark',
+  theme: getCachedTheme(),
 }
 
 type ModalState = { day: number; slot: number; existing?: Activity } | null
@@ -32,8 +45,16 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [docData, setDocData] = useState<DocData>(DEFAULT_DOC)
-  const [weekKey, setWeekKey] = useState<string>(() => currentWeekKey(WEEKS))
+  const [weekKey, setWeekKey] = useState<string>(getCachedWeekKey)
   const [modal, setModal] = useState<ModalState>(null)
+
+  useEffect(() => {
+    localStorage.setItem(WEEK_KEY_STORAGE, weekKey)
+  }, [weekKey])
+
+  useEffect(() => {
+    localStorage.setItem(THEME_STORAGE, docData.theme)
+  }, [docData.theme])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
