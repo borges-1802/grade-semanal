@@ -168,9 +168,7 @@ export default function App() {
     return <LoginScreen />
   }
 
-  const displayName =
-    (user.email && DISPLAY_NAMES[user.email]) || user.displayName || user.email?.split('@')[0] || ''
-  const currentWeek = WEEKS.find((w) => w.key === weekKey) ?? WEEKS[0]
+  const displayName = (user.email && DISPLAY_NAMES[user.email]) || user.displayName || user.email?.split('@')[0] || ''
 
   const navButtonClass = 'border border-accent text-accent rounded-md px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm cursor-pointer hover:bg-accent/10 disabled:opacity-40 disabled:cursor-not-allowed shrink-0'
 
