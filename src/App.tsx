@@ -9,6 +9,7 @@ import WeekDuplicateMenu from './components/WeekDuplicateMenu.tsx'
 import { DEFAULT_DAYS } from './data/constants.ts'
 import { generateWeeks, currentWeekKey, type WeekOption } from './data/weeks.ts'
 import type { Activity } from './types.ts'
+import { getRecentColors, addRecentColor } from './utils/recentColors.ts'
 
 const WEEKS: WeekOption[] = generateWeeks()
 
@@ -40,6 +41,7 @@ export default function App() {
   const [docData, setDocData] = useState<DocData>(DEFAULT_DOC)
   const [weekKey, setWeekKey] = useState<string>(getCachedWeekKey)
   const [modal, setModal] = useState<ModalState>(null)
+  const [recentColors, setRecentColors] = useState<string[]>(getRecentColors)
 
   useEffect(() => {
     localStorage.setItem(WEEK_KEY_STORAGE, weekKey)
@@ -103,6 +105,7 @@ export default function App() {
 
   function handleSaveActivity(data: { name: string; color: string; duration: number }) {
     if (!modal) return
+    setRecentColors(addRecentColor(data.color))
     if (modal.existing) {
       setActivitiesForWeek(
         activities.map((a) => (a.id === modal.existing!.id ? { ...a, ...data } : a))
@@ -233,6 +236,7 @@ export default function App() {
             dayName={docData.days[modal.day]}
             slot={modal.slot}
             existing={modal.existing}
+            recentColors={recentColors}
             onSave={handleSaveActivity}
             onDelete={modal.existing ? handleDeleteActivity : undefined}
             onClose={() => setModal(null)}

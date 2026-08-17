@@ -6,12 +6,21 @@ type ActivityModalProps = {
   dayName: string
   slot: number
   existing?: Activity
+  recentColors: string[]
   onSave: (data: { name: string; color: string; duration: number }) => void
   onDelete?: () => void
   onClose: () => void
 }
 
-export default function ActivityModal({ dayName, slot, existing, onSave, onDelete, onClose }: ActivityModalProps) {
+export default function ActivityModal({
+  dayName,
+  slot,
+  existing,
+  recentColors,
+  onSave,
+  onDelete,
+  onClose,
+}: ActivityModalProps) {
   const [name, setName] = useState(existing?.name || '')
   const [color, setColor] = useState(existing?.color || COLOR_PALETTE[0].value)
   const [duration, setDuration] = useState(existing?.duration || DURATIONS[1].slots)
@@ -69,19 +78,41 @@ export default function ActivityModal({ dayName, slot, existing, onSave, onDelet
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {COLOR_PALETTE.map((c) => (
-            <button
-              type="button"
-              key={c.value}
-              className={`w-5 h-5 rounded-full border-2 cursor-pointer ${
-                color === c.value ? 'border-accent' : 'border-transparent'
-              }`}
-              style={{ background: c.value }}
-              title={c.name}
-              onClick={() => setColor(c.value)}
-            />
-          ))}
+        {recentColors.length > 0 && (
+          <div className="mt-2">
+            <label className="text-xs text-neutral-400 block mb-1">Usadas recentemente</label>
+            <div className="flex flex-wrap gap-1.5">
+              {recentColors.map((value) => (
+                <button
+                  type="button"
+                  key={value}
+                  className={`w-5 h-5 rounded-full border-2 cursor-pointer ${
+                    color === value ? 'border-accent' : 'border-transparent'
+                  }`}
+                  style={{ background: value }}
+                  onClick={() => setColor(value)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-2">
+          <label className="text-xs text-neutral-400 block mb-1">Paleta</label>
+          <div className="flex flex-wrap gap-1.5">
+            {COLOR_PALETTE.map((c) => (
+              <button
+                type="button"
+                key={c.value}
+                className={`w-5 h-5 rounded-full border-2 cursor-pointer ${
+                  color === c.value ? 'border-accent' : 'border-transparent'
+                }`}
+                style={{ background: c.value }}
+                title={c.name}
+                onClick={() => setColor(c.value)}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 mt-4">
