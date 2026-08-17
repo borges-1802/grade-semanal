@@ -32,7 +32,7 @@ export default function ScheduleGrid({
       <div
         className="grid"
         style={{
-          gridTemplateColumns: `72px repeat(${days.length}, 1fr)`,
+          gridTemplateColumns: `56px repeat(${days.length}, minmax(104px, 1fr))`,
           gridTemplateRows: `44px repeat(${TIME_SLOTS.length}, 24px)`,
         }}
       >

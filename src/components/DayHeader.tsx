@@ -37,7 +37,7 @@ export default function DayHeader({ name, allDays, dayIndex, onRename, onDuplica
   }
 
   return (
-    <div className="relative flex items-center justify-between gap-1 p-2 border-l border-divider bg-surface text-text font-medium text-center">
+    <div className="relative flex items-center justify-between gap-1 p-1.5 border-l border-divider bg-surface text-text text-sm font-medium text-center">
       {editing ? (
         <input
           autoFocus

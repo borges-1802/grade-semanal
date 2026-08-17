@@ -31,9 +31,10 @@ export default function WeekDuplicateMenu({ weeks, currentWeekKey, onDuplicate }
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="border border-accent text-accent rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-accent/10"
+        className="border border-accent text-accent rounded-md px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm cursor-pointer hover:bg-accent/10 shrink-0"
       >
-        Duplicar semana ⋯
+        <span className="sm:hidden">Duplicar ⋯</span>
+        <span className="hidden sm:inline">Duplicar semana ⋯</span>
       </button>
 
       {open && (

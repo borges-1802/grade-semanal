@@ -13,7 +13,6 @@ import type { Activity } from './types.ts'
 const WEEKS: WeekOption[] = generateWeeks()
 
 const WEEK_KEY_STORAGE = 'grade-last-week'
-const THEME_STORAGE = 'grade-theme'
 
 function getCachedWeekKey(): string {
   const saved = localStorage.getItem(WEEK_KEY_STORAGE)
@@ -21,22 +20,16 @@ function getCachedWeekKey(): string {
   return isValid ? saved : currentWeekKey(WEEKS)
 }
 
-function getCachedTheme(): 'dark' | 'light' {
-  return localStorage.getItem(THEME_STORAGE) === 'light' ? 'light' : 'dark'
-}
-
 type DocData = {
   days: string[]
   hourOverrides: Record<string, string>
   activitiesByWeek: Record<string, Activity[]>
-  theme: 'dark' | 'light'
 }
 
 const DEFAULT_DOC: DocData = {
   days: DEFAULT_DAYS,
   hourOverrides: {},
   activitiesByWeek: {},
-  theme: getCachedTheme(),
 }
 
 type ModalState = { day: number; slot: number; existing?: Activity } | null
@@ -51,10 +44,6 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(WEEK_KEY_STORAGE, weekKey)
   }, [weekKey])
-
-  useEffect(() => {
-    localStorage.setItem(THEME_STORAGE, docData.theme)
-  }, [docData.theme])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -86,7 +75,6 @@ export default function App() {
         days: data.days ?? DEFAULT_DAYS,
         hourOverrides: data.hourOverrides ?? {},
         activitiesByWeek: data.activitiesByWeek ?? {},
-        theme: data.theme ?? 'dark',
       })
     })
     return unsubscribe
@@ -170,10 +158,6 @@ export default function App() {
     setWeekKey(WEEKS[nextIdx].key)
   }
 
-  function toggleTheme() {
-    persist({ ...docData, theme: docData.theme === 'dark' ? 'light' : 'dark' })
-  }
-
   if (authLoading) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center text-neutral-400">Carregando…</div>
@@ -184,22 +168,19 @@ export default function App() {
     return <LoginScreen />
   }
 
-  const displayName = (user.email && DISPLAY_NAMES[user.email]) || user.displayName || user.email?.split('@')[0] || ''
-  const isLight = docData.theme === 'light'
+  const displayName =
+    (user.email && DISPLAY_NAMES[user.email]) || user.displayName || user.email?.split('@')[0] || ''
+  const currentWeek = WEEKS.find((w) => w.key === weekKey) ?? WEEKS[0]
+
+  const navButtonClass = 'border border-accent text-accent rounded-md px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm cursor-pointer hover:bg-accent/10 disabled:opacity-40 disabled:cursor-not-allowed shrink-0'
 
   return (
-    <div className={isLight ? 'light min-h-screen bg-bg text-text' : 'min-h-screen bg-bg text-text'}>
-      <div className="max-w-350 mx-auto px-4 pt-6 pb-16">
+    <div className="min-h-screen bg-bg text-text">
+      <div className="max-w-350 mx-auto px-3 sm:px-4 pt-6 pb-16">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-          <h1 className="text-[22px] font-medium m-0">Grade do Semestre 2026-2</h1>
-          <div className="flex items-center gap-3 text-sm">
+          <h1 className="text-[22px] font-medium m-0">Grade Semanal</h1>
+          <div className="flex items-center gap-3 text-sm capitalize">
             <span className="text-neutral-400">Olá, {displayName}</span>
-            <button
-              onClick={toggleTheme}
-              className="text-accent hover:bg-accent/10 rounded-md px-3 py-1.5 text-sm cursor-pointer"
-            >
-              {isLight ? 'Modo escuro' : 'Modo claro'}
-            </button>
             <button
               onClick={handleLogout}
               className="text-accent hover:bg-accent/10 rounded-md px-3 py-1.5 text-sm cursor-pointer"
@@ -209,19 +190,16 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mb-4 flex-wrap">
-          <button
-            onClick={() => goToWeek(-1)}
-            disabled={weekKey === WEEKS[0].key}
-            className="border border-accent text-accent rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-accent/10 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            ‹ Semana anterior
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 flex-wrap">
+          <button onClick={() => goToWeek(-1)} disabled={weekKey === WEEKS[0].key} className={navButtonClass}>
+            <span className="sm:hidden">‹</span>
+            <span className="hidden sm:inline">‹ Semana anterior</span>
           </button>
 
           <select
             value={weekKey}
             onChange={(e) => setWeekKey(e.target.value)}
-            className="border border-accent text-accent bg-transparent rounded-md px-3 py-1.5 text-sm cursor-pointer"
+            className="border border-accent text-accent bg-transparent rounded-md px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm cursor-pointer shrink-0"
           >
             {WEEKS.map((w) => (
               <option key={w.key} value={w.key} className="bg-surface text-text">
@@ -233,9 +211,10 @@ export default function App() {
           <button
             onClick={() => goToWeek(1)}
             disabled={weekKey === WEEKS[WEEKS.length - 1].key}
-            className="border border-accent text-accent rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-accent/10 disabled:opacity-40 disabled:cursor-not-allowed"
+            className={navButtonClass}
           >
-            Próxima semana ›
+            <span className="sm:hidden">›</span>
+            <span className="hidden sm:inline">Próxima semana ›</span>
           </button>
           <WeekDuplicateMenu weeks={WEEKS} currentWeekKey={weekKey} onDuplicate={handleDuplicateWeek} />
         </div>

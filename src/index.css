@@ -33,13 +33,6 @@
   --radius-lg: 14px;
 }
 
-.light {
-  --color-bg: #f3f5fe;
-  --color-surface: #ffffff;
-  --color-text: #292b31;
-  --color-divider: rgba(41, 43, 49, 0.12);
-}
-
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
